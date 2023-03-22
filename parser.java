@@ -5,13 +5,9 @@ import java.util.*;
 public class parser {
     final static HashMap<Integer, Node> nodeList = new HashMap<>();
 
-    public static void main(String[] args) throws Exception {
+    public static Node parseFile(String path, int nodeIdentifier) throws Exception {
         Node node = new Node();
-        HashMap<Integer, ArrayList<Node>> NeighborNodes = new HashMap<>();
-        
-
-        // TODO remove hard code after parser is working
-        String path = "config.txt";
+        boolean nodeAssigned = false;
         BufferedReader b = new BufferedReader(new FileReader(path));
 
         String readLine = "";
@@ -24,6 +20,7 @@ public class parser {
 
         // Readline holds the number of nodes in the system
         int numberOfNodes = Integer.parseInt(readLine);
+        ArrayList<Integer> orderUID = new ArrayList<>();
         readLine = b.readLine();
 
         // Ignores any empty lines or commented lines
@@ -47,12 +44,15 @@ public class parser {
             Port = Integer.parseInt(s[2]);
         }
         HashMap<Integer, NodeAdj> NeighborWeight = new HashMap<>();
-        Node addNode = new Node(UID, Hostname, Port, NeighborNodes, NeighborWeight);
+        Node addNode = new Node(UID, Hostname, Port, NeighborWeight, numberOfNodes);
         nodeList.put(UID, addNode);
+        orderUID.add(UID);
 
-        // Initiate the neighbor list for each node by entering all nodes in the
-        // nodeList
-        nodeList.get(UID).Neighbors.put(UID, new ArrayList<>());
+        //If the node identifier matches this node then assign it
+        if(nodeIdentifier == UID){
+            node = addNode;
+            nodeAssigned = true;
+        }
 
         // Loop through the rest
         for (int i = 1; i < numberOfNodes; i++) {
@@ -69,12 +69,16 @@ public class parser {
                 Port = Integer.parseInt(s[2]);
             }
             HashMap<Integer, NodeAdj> NeighborWeight2 = new HashMap<>();
-            addNode = new Node(UID, Hostname, Port, NeighborNodes, NeighborWeight2);
+            addNode = new Node(UID, Hostname, Port, NeighborWeight2, numberOfNodes);
             nodeList.put(UID, addNode);
+            orderUID.add(UID);
 
-            // Initiate the neighbor list for each node by entering all nodes in the
-            // nodeList
-            nodeList.get(UID).Neighbors.put(UID, new ArrayList<>());
+            //If the node identifier matches this node then assign it
+            if(nodeIdentifier == UID){
+                node = addNode;
+                nodeAssigned = true;
+            }
+    
         }
 
         readLine = b.readLine();
@@ -107,11 +111,10 @@ public class parser {
         // Get the Larger UID node, and put the smaller UID node as a neighbor
         nodeList.get(largerUID).NeighborWeights.put(smallerUID, nodeAdjSmall);
 
-        
         // Set up the neighbors and their weights
         while (true) {
             readLine = b.readLine();
-            if(readLine == null){
+            if (readLine == null) {
                 break;
             }
             readLine.trim();
@@ -125,7 +128,7 @@ public class parser {
             s = s[0].split(",");
             smallerUID = Integer.parseInt(s[0].substring(1));
             largerUID = Integer.parseInt(s[1].substring(0, s[1].length() - 1));
-                
+
             // Create an adj node
             nodeAdjSmall = new NodeAdj(smallerUID, weight, nodeList.get(smallerUID));
             nodeAdjLarge = new NodeAdj(largerUID, weight, nodeList.get(largerUID));
@@ -134,18 +137,28 @@ public class parser {
             // Get the smaller UID node, and put the larger UID node as a neighbor
             nodeList.get(smallerUID).NeighborWeights.put(largerUID, nodeAdjLarge);
             // Get the Larger UID node, and put the smaller UID node as a neighbor
-            nodeList.get(largerUID).NeighborWeights.put(smallerUID, nodeAdjSmall);   
+            nodeList.get(largerUID).NeighborWeights.put(smallerUID, nodeAdjSmall);
         }
-        
+
         b.close();
-        
+
+        //If the node has not yet been assigned then the identifier is the index
+        if(!nodeAssigned){
+            //Locate the correct UID for the index and assign it
+            int findUID = orderUID.get(nodeIdentifier);
+            node = nodeList.get(findUID);
+        }
+
+        return node;
+
         /*
-        System.out.println("UID: " + nodeList.get(5).getNodeUID() + " Neigh Size: " + nodeList.get(5).NeighborWeights.size() );
-        System.out.println("UID: " + nodeList.get(200).getNodeUID() + " Neigh Size: " + nodeList.get(200).NeighborWeights.size() );
-        System.out.println("UID: " + nodeList.get(8).getNodeUID() + " Neigh Size: " + nodeList.get(8).NeighborWeights.size() );
-        System.out.println("UID: " + nodeList.get(184).getNodeUID() + " Neigh Size: " + nodeList.get(184).NeighborWeights.size() );
-        System.out.println("UID: " + nodeList.get(9).getNodeUID() + " Neigh Size: " + nodeList.get(9).NeighborWeights.size());
-        System.out.println("UID: " + nodeList.get(37).getNodeUID() + " Neigh Size: " + nodeList.get(37).NeighborWeights.size());
-        System.out.println("UID: " + nodeList.get(78).getNodeUID() + " Neigh Size: " + nodeList.get(78).NeighborWeights.size());*/
+         * System.out.println("UID: " + nodeList.get(5).getNodeUID()   + " Neigh Size: " + nodeList.get(5).NeighborWeights.size() );
+         * System.out.println("UID: " + nodeList.get(200).getNodeUID() + " Neigh Size: " + nodeList.get(200).NeighborWeights.size() );
+         * System.out.println("UID: " + nodeList.get(8).getNodeUID()   + " Neigh Size: " + nodeList.get(8).NeighborWeights.size() );
+         * System.out.println("UID: " + nodeList.get(184).getNodeUID() + " Neigh Size: " + nodeList.get(184).NeighborWeights.size() );
+         * System.out.println("UID: " + nodeList.get(9).getNodeUID()   + " Neigh Size: " + nodeList.get(9).NeighborWeights.size());
+         * System.out.println("UID: " + nodeList.get(37).getNodeUID()  + " Neigh Size: " + nodeList.get(37).NeighborWeights.size());
+         * System.out.println("UID: " + nodeList.get(78).getNodeUID()  + " Neigh Size: " + nodeList.get(78).NeighborWeights.size());
+         */
     }
 }
