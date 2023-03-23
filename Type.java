@@ -1,5 +1,9 @@
 public enum Type {
-    SEND,
     SEARCH,
-    RESPONSE
+    TEST,
+    ACK,
+    NACK,
+    REQUEST,
+    CANDIDATE,
+    MERGE
 }
