@@ -150,15 +150,5 @@ public class parser {
         }
 
         return node;
-
-        /*
-         * System.out.println("UID: " + nodeList.get(5).getNodeUID()   + " Neigh Size: " + nodeList.get(5).NeighborWeights.size() );
-         * System.out.println("UID: " + nodeList.get(200).getNodeUID() + " Neigh Size: " + nodeList.get(200).NeighborWeights.size() );
-         * System.out.println("UID: " + nodeList.get(8).getNodeUID()   + " Neigh Size: " + nodeList.get(8).NeighborWeights.size() );
-         * System.out.println("UID: " + nodeList.get(184).getNodeUID() + " Neigh Size: " + nodeList.get(184).NeighborWeights.size() );
-         * System.out.println("UID: " + nodeList.get(9).getNodeUID()   + " Neigh Size: " + nodeList.get(9).NeighborWeights.size());
-         * System.out.println("UID: " + nodeList.get(37).getNodeUID()  + " Neigh Size: " + nodeList.get(37).NeighborWeights.size());
-         * System.out.println("UID: " + nodeList.get(78).getNodeUID()  + " Neigh Size: " + nodeList.get(78).NeighborWeights.size());
-         */
     }
 }

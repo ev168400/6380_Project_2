@@ -26,7 +26,7 @@ public class Main {
 		serverthread.start();
 
         for (Map.Entry<Integer, Node> node : parser.nodeList.entrySet()) {
-            if(node.getValue().getNodeHostName().equals(clientHostName)){
+            if(node.getValue().getNodeHostName().equals(clientHostName) && node.getValue().getNodeUID() == mainNode.getNodeUID()){
                 node.getValue().NeighborWeights.entrySet().forEach((neighbor) -> {
                     Runnable clientRunnable = new Runnable() {
                         public void run() {
@@ -50,9 +50,20 @@ public class Main {
                 break;
             }
         }
+        try {
+            while (mainNode.connectedClients.size() < mainNode.getNeighbors().size()) {
+                Thread.sleep(10000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         //Start algorithm
+        GHS algorithm = new GHS(mainNode);
+        algorithm.startGHS();
+
     }
+    
     public static Node BuildNode(String path, int nodeIdentifier) {
 		Node mainNode = new Node();
 		try {

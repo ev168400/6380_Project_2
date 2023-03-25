@@ -1,0 +1,29 @@
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc02.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 5; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc03.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 200; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc04.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 8; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc05.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 184; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc02.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 9; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc07.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 37; exec bash -i
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc08.utdallas.edu java -cp /home/010/e/ej/ejv190000/CS6380/Proj2 Main /home/010/e/ej/ejv190000/CS6380/Proj2/Config.txt 78; exec bash -i
+
+
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc02.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc03.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc04.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc05.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc02.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc07.utdallas.edu killall -u ejv190000
+
+ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ejv190000@dc08.utdallas.edu killall -u ejv190000
