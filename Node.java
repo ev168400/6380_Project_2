@@ -6,6 +6,7 @@ public class Node {
     int listeningPort;
     int LeaderUID;
     int numberOfNodes;
+    int fragmentSize;
     HashMap<Integer, NodeAdj> NeighborWeights;
     boolean leader;
     Queue<Messages> messageQueue;
@@ -20,6 +21,8 @@ public class Node {
         this.listeningPort = listeningPort;
         this.NeighborWeights = NeighborWeights;
         this.numberOfNodes = numNodes;
+        this.LeaderUID = nodeUID;
+        this.fragmentSize=0;
         this.messageQueue = new LinkedList<Messages>();
     }
 
@@ -28,6 +31,7 @@ public class Node {
     public void addMessageToQueue(Messages newMessage){messageQueue.add(newMessage);}
     public void setLeader(int newLeader){this.LeaderUID = newLeader;}
     public void setNumberNodes(int numNodes){this.numberOfNodes = numNodes;}
+    public void incrementFragmentSize(){this.fragmentSize++;}
 
     //Getters
     public int getNodeUID() {return this.nodeUID;}
