@@ -47,15 +47,16 @@ public class GHS {
                                 }
                             });
                             try {
-                                    Thread.sleep(10000);
+                                    Thread.sleep(15000);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
-                        int testRecieved = 0, ackReceived = 0, nackRecieved = 0;
+                        int testRecieved = 0, ackReceived = 0, nackRecieved = 0, count = 0;
                         ArrayList<Integer> sendNack = new ArrayList<>();
                         while(testRecieved < node.getNeighbors().size() || (ackReceived+nackRecieved) < node.getNeighbors().size()){
                             // check message queue - can recieve TEST, ACK or NACK
+                            
                             if (!node.messageQueue.isEmpty()) {
                                 Messages messageRecieved = node.getMessage();
                                 System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() + " from " + messageRecieved.getUIDofSender());
@@ -88,7 +89,7 @@ public class GHS {
                                             }
                                         });
                                         try {
-                                            Thread.sleep(10000);
+                                            Thread.sleep(15000);
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
@@ -104,7 +105,7 @@ public class GHS {
                                             }
                                         });
                                         try {
-                                            Thread.sleep(10000);
+                                            Thread.sleep(15000);
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
                                         }
@@ -148,7 +149,7 @@ public class GHS {
                                 }
                                 // Any other message type may be ignored while in phase 0
                                 else {
-                                    System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() + " from " + messageRecieved.getUIDofSender());
+                                   // System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() + " from " + messageRecieved.getUIDofSender());
                                 }
                             }
                             testSent = false;
@@ -212,10 +213,10 @@ public class GHS {
                                     //Add candidate to list <UID of node in component with edge, edge weight> if they are not already present
                                     if(!candidates.containsKey(messageRecieved.UIDofSender)){
                                         candidates.put(messageRecieved.UIDofSender, messageRecieved.getWeight());
+                                        System.out.println("Added candidated recieved from " + messageRecieved.getUIDofSender());
                                     }
                                    
                                 }
-                                //Else it is from a different component and may be ignored
                             }
                             //Test
                             else if(messageRecieved.getTypeOfMessage() == Type.TEST){
@@ -228,12 +229,14 @@ public class GHS {
                                         System.out.println("Current lowest weight: " +  currentLowestWeight + " : " + currentLowestUID);
                                     }
                                     //else a smaller edge already exist
-                                    testRecieved++;
                                 }
+                                testRecieved++;
                                 //Once all test have been recieved add the smallest to the list of candidates
                                 if(testRecieved == node.getNeighbors().size()){
                                     candidates.put(node.getNodeUID(), currentLowestWeight);
+                                    System.out.println("Added candidated neighbor " + currentLowestUID);
                                 }
+                                
                             }
                             //Search
                             else if(messageRecieved.getTypeOfMessage() == Type.SEARCH){
@@ -245,6 +248,7 @@ public class GHS {
                                 if(messageRecieved.getIntendedRecipient() == node.getNodeUID()){
                                     //Add it to a list - will check this list before merging in case the leader has the MWOE
                                     ackReceivedFromNeighbor.add(messageRecieved.getUIDofSender());
+                                    System.out.println(node.getNodeUID() + " recieved an ack from " + messageRecieved.getUIDofSender());
                                 }
                             }
                             //Nack
@@ -305,10 +309,8 @@ public class GHS {
                                     e.printStackTrace();
                                 }
 
-                                //Process the merge
-                                //If the leader has the MWOE
+                                //Handle the merge
                                 if(ackReceivedFromNeighbor.contains(currentLowestUID)){
-
                                     //Keep track of the edges used for later output
                                     usedEdges.add(currentLowestUID);
 
@@ -323,36 +325,10 @@ public class GHS {
                                     currentLowestUID = -1;
                                     currentLowestWeight = 1000;
                                 }
-
                             }
                             //Else a child has the MWOE
                             else{
-                                //Create Merge Message with inteded Recipient "Sender of smallest"
-                                Messages mergeMessage = new Messages(node.getLeader(), level, node.getNodeUID(), smallestCandidateWeight, smallestCandidateUID, Type.MERGE);
-                                System.out.println(node.getNodeUID() + " sent merge to all neighbors with intended recipient " + smallestCandidateUID);
-                                // Send out the test message
-                                node.connectedClients.forEach((clientHandler) -> {
-                                    try {
-                                        clientHandler.getOutputWriter().writeObject(mergeMessage);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                try {
-                                        Thread.sleep(10000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                            }
 
-                            //reset these variable
-                            currentLowestWeight = 1000;
-                            currentLowestUID = -1;
-                            searchSent = false;
-                            try {
-                                Thread.sleep(10000);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
                             }
                         }
                     }
@@ -386,7 +362,7 @@ public class GHS {
                                         }
                                     });
                                     try {
-                                        Thread.sleep(10000);
+                                        Thread.sleep(15000);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
@@ -404,7 +380,7 @@ public class GHS {
                                         }
                                     });
                                     try {
-                                            Thread.sleep(10000);
+                                            Thread.sleep(500);
                                     } catch (InterruptedException e) {
                                         e.printStackTrace();
                                     }
@@ -429,135 +405,38 @@ public class GHS {
                             
                             //Once all test have been recieved send the Candidate back to the leader
                             if(testRecieved == node.getNeighbors().size()){
-                                // Create new test message - intended recipient will hold the UID of the other side of MWOE
-                                Messages candidateMessage = new Messages(node.getLeader(), level, node.getNodeUID(), currentLowestWeight, currentLowestUID, Type.CANDIDATE);
-                                System.out.println(node.getNodeUID() + " sent candidate " + currentLowestUID + " of weight " + currentLowestWeight + " to all neighbors");
-                                // Send out the test message
-                                node.connectedClients.forEach((clientHandler) -> {
-                                    try {
-                                        clientHandler.getOutputWriter().writeObject(candidateMessage);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                try {
-                                        Thread.sleep(10000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
+                                 // Create new test message - intended recipient will hold the UID of the other side of MWOE
+                                 Messages candidateMessage = new Messages(node.getLeader(), level, node.getNodeUID(), currentLowestWeight, currentLowestUID, Type.CANDIDATE);
+                                 System.out.println(node.getNodeUID() + " sent candidate " + currentLowestUID + " of weight " + currentLowestWeight + " to all neighbors");
+                                 // Send out the test message
+                                 node.connectedClients.forEach((clientHandler) -> {
+                                     try {
+                                         clientHandler.getOutputWriter().writeObject(candidateMessage);
+                                     } catch (IOException e) {
+                                         e.printStackTrace();
+                                     }
+                                 });
+                                 try {
+                                         Thread.sleep(15000);
+                                 } catch (InterruptedException e) {
+                                     e.printStackTrace();
+                                 }
                             }
                         }
                         //Ack
                         else if(messageRecieved.getTypeOfMessage() == Type.ACK){
-                            //Verify who the ack is intended for
-                            if(messageRecieved.getIntendedRecipient() == node.getNodeUID()){
-                                //If this node is the intended recipient verify it is reciprocated
-                                if(messageRecieved.getUIDofSender() == currentLowestUID){
-                                    //If it is reciprocated merge the components
-                                    System.out.println(node.getNodeUID() + " is ready to merge with " + messageRecieved.UIDofSender);
-
-                                    //Keep track of the edges used for later output
-                                    usedEdges.add(messageRecieved.getUIDofSender());
-
-                                    //New leader will be bigger fragment so allow bigger leader to initate
-                                    int newLeader = Math.max(node.getLeader(), messageRecieved.getLeaderUID());
-                                    int oldLeader = Math.min(node.getLeader(), messageRecieved.getLeaderUID());
-                                        
-                                    //Merge the two fragments
-                                    mergeFragments(newLeader, oldLeader, level, messageRecieved.getPhase());
-
-                                    //reset these variables
-                                    currentLowestUID = -1;
-                                    currentLowestWeight = 1000;
-                                }
-                            }//Else the ack is not meant for this node
-                                
+                                 
                         }
                         //Nack
                         else if(messageRecieved.getTypeOfMessage() == Type.NACK){
                         }
                         //Candidate
                         else if(messageRecieved.getTypeOfMessage() == Type.CANDIDATE){
-                            //Verify it is coming from same component 
-                            if(messageRecieved.getLeaderUID() == node.getLeader()){
-                                //Pass along Candidate 
-                                System.out.println(node.getNodeUID() + " passed Candidate to all neighbors");
-                                // Send out the candidate message
-                                node.connectedClients.forEach((clientHandler) -> {
-                                    try {
-                                        clientHandler.getOutputWriter().writeObject(messageRecieved);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                });
-                                try {
-                                    Thread.sleep(10000);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                            //Else it is from a different component and may be ignored
+                            
                         }
                         //Merge
                         else if(messageRecieved.getTypeOfMessage() == Type.MERGE){
-                            //Verify it is from this nodes leader
-                            if(messageRecieved.getLeaderUID() == node.getLeader()){
-                                //Verify it is intended for this node
-                                if(messageRecieved.getIntendedRecipient() == node.nodeUID){
-                                    // Create new ack message - weight is not necessary
-                                    Messages ackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.ACK);
-                                    System.out.println(node.getNodeUID() + " sent ack to all neighbors with intended " + currentLowestUID);
-                                    // Send out the ack message
-                                    node.connectedClients.forEach((clientHandler) -> {
-                                        try {
-                                            clientHandler.getOutputWriter().writeObject(ackMessage);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                    try {
-                                        Thread.sleep(10000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    // Create new nack message - weight is not necessary - intended recipeint shows who the connecting edge will be
-                                    Messages nackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.NACK);
-                                    System.out.println(node.getNodeUID() + " sent nack to all neighbors with intended " + currentLowestUID);
-                                    // Send out the nack message
-                                    node.connectedClients.forEach((clientHandler) -> {
-                                        try {
-                                            clientHandler.getOutputWriter().writeObject(nackMessage);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                    try {
-                                        Thread.sleep(10000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-
-                                }
-                                //Else it is meant for another node in the same component
-                                else{
-                                    //Pass along Merge 
-                                    System.out.println(node.getNodeUID() + " passed Merge to all neighbors");
-                                    // Send out the Merge message
-                                    node.connectedClients.forEach((clientHandler) -> {
-                                        try {
-                                            clientHandler.getOutputWriter().writeObject(messageRecieved);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    });
-                                    try {
-                                        Thread.sleep(10000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
+                            
                         }
                         //Should not be any other message types to enter here
                         else{
