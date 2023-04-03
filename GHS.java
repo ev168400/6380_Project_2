@@ -37,7 +37,6 @@ public class GHS {
                             testSent = true;
                             // Create new test message - weight and intended recipient are not necessary here
                             Messages testMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, -1, Type.TEST);
-                            System.out.println(node.getNodeUID() + " sent test to all neighbors");
                             // Send out the test message
                             node.connectedClients.forEach((clientHandler) -> {
                                 try {
@@ -59,14 +58,12 @@ public class GHS {
                             
                             if (!node.messageQueue.isEmpty()) {
                                 Messages messageRecieved = node.getMessage();
-                                System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() + " from " + messageRecieved.getUIDofSender());
                                 // Recieves a TEST
                                 if (messageRecieved.getTypeOfMessage() == Type.TEST) {
                                     // Check to see if the edge weight from this node is smaller than one already seen
                                     if (node.getNeighbors().get(messageRecieved.UIDofSender).getWeight() < currentLowestWeight) {
                                         currentLowestWeight = node.getNeighbors().get(messageRecieved.UIDofSender).getWeight();
                                         currentLowestUID = messageRecieved.getUIDofSender();
-                                        System.out.println("Current lowest weight: " +  currentLowestWeight + " : " + currentLowestUID);
                                     }
                                     //If it isnt add the uid to a list of rejected edges
                                     else{
@@ -79,7 +76,6 @@ public class GHS {
                                     if(testRecieved == node.getNeighbors().size()){
                                         // Create new ack message - weight is not necessary
                                         Messages ackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.ACK);
-                                        System.out.println(node.getNodeUID() + " sent ack to all neighbors with intended " + currentLowestUID);
                                         // Send out the ack message
                                         node.connectedClients.forEach((clientHandler) -> {
                                             try {
@@ -96,7 +92,6 @@ public class GHS {
                                         
                                         // Create new nack message - weight is not necessary - intended recipeint shows who the connecting edge will be
                                         Messages nackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.NACK);
-                                        System.out.println(node.getNodeUID() + " sent nack to all neighbors with intended " + currentLowestUID);
                                         // Send out the nack message
                                         node.connectedClients.forEach((clientHandler) -> {
                                             try {
@@ -116,7 +111,6 @@ public class GHS {
                                 else if (messageRecieved.getTypeOfMessage() == Type.ACK) {
                                     //Check to ensure this node is the intended recipient and the correct MWOE
                                     if(messageRecieved.getIntendedRecipient() == node.getNodeUID() && messageRecieved.getUIDofSender() == currentLowestUID){
-                                        System.out.println(node.getNodeUID() + " is ready to merge with " + messageRecieved.UIDofSender);
                                         ackReceived++;
 
                                         //Keep track of the edges used for later output
@@ -170,7 +164,6 @@ public class GHS {
                             searchSent = true;
                             //Leader sends out Search to all neighbors
                             Messages searchMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, -1, Type.SEARCH);
-                            System.out.println(node.getNodeUID() + " sent search to all neighbors");
                             // Send out the Search message
                             node.connectedClients.forEach((clientHandler) -> {
                                 try {
@@ -188,7 +181,6 @@ public class GHS {
                             //Send test to all neighbors
                             // Create new test message - weight and intended recipient are not necessary here
                             Messages testMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, -1, Type.TEST);
-                            System.out.println(node.getNodeUID() + " sent test to all neighbors");
                             // Send out the test message
                             node.connectedClients.forEach((clientHandler) -> {
                                 try {
@@ -207,7 +199,6 @@ public class GHS {
                         //Waits for messages
                         if (!node.messageQueue.isEmpty()) {
                             Messages messageRecieved = node.getMessage();
-                            System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() +  " from " + messageRecieved.getUIDofSender());
                             //Candidate
                             if(messageRecieved.getTypeOfMessage() == Type.CANDIDATE){
                                 //Verify this candidate is from this component
@@ -215,7 +206,6 @@ public class GHS {
                                     //Add candidate to list <UID of node in component with edge, edge weight> if they are not already present
                                     if(!candidates.containsKey(messageRecieved.UIDofSender)){
                                         candidates.put(messageRecieved.UIDofSender, messageRecieved.getWeight());
-                                        System.out.println("Added candidated recieved from " + messageRecieved.getUIDofSender());
                                     }
                                    
                                 }
@@ -228,7 +218,6 @@ public class GHS {
                                     if (node.getNeighbors().get(messageRecieved.UIDofSender).getWeight() < currentLowestWeight) {
                                         currentLowestWeight = node.getNeighbors().get(messageRecieved.UIDofSender).getWeight();
                                         currentLowestUID = messageRecieved.getUIDofSender();
-                                        System.out.println("Current lowest weight: " +  currentLowestWeight + " : " + currentLowestUID);
                                     }
                                     //else a smaller edge already exist
                                 }
@@ -236,7 +225,6 @@ public class GHS {
                                 //Once all test have been recieved add the smallest to the list of candidates
                                 if(testRecieved == node.getNeighbors().size()){
                                     candidates.put(node.getNodeUID(), currentLowestWeight);
-                                    System.out.println("Added candidated neighbor " + currentLowestUID);
                                 }
                                 
                             }
@@ -250,7 +238,6 @@ public class GHS {
                                 if(messageRecieved.getIntendedRecipient() == node.getNodeUID()){
                                     //Add it to a list - will check this list before merging in case the leader has the MWOE
                                     ackReceivedFromNeighbor.add(messageRecieved.getUIDofSender());
-                                    System.out.println(node.getNodeUID() + " recieved an ack from " + messageRecieved.getUIDofSender());
                                 }
                             }
                             //Nack
@@ -280,7 +267,6 @@ public class GHS {
                             if(smallestCandidateUID == node.getNodeUID()){
                                 // Create new ack message - weight is not necessary
                                 Messages ackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.ACK);
-                                System.out.println(node.getNodeUID() + " sent ack to all neighbors with intended " + currentLowestUID);
                                 // Send out the ack message
                                 node.connectedClients.forEach((clientHandler) -> {
                                     try {
@@ -298,7 +284,6 @@ public class GHS {
                                 
                                 // Create new nack message - weight is not necessary - intended recipeint shows who the connecting edge will be
                                 Messages nackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.NACK);
-                                System.out.println(node.getNodeUID() + " sent nack to all neighbors with intended " + currentLowestUID);
                                 // Send out the nack message
                                 node.connectedClients.forEach((clientHandler) -> {
                                     try {
@@ -317,7 +302,6 @@ public class GHS {
                             //Send a merge message to children so they can send their ack/nacks
                             //Create Merge Message with inteded Recipient "Sender of smallest"
                             Messages mergeMessage = new Messages(node.getLeader(), level, node.getNodeUID(), smallestCandidateWeight, smallestCandidateUID, Type.MERGE);
-                            System.out.println(node.getNodeUID() + " sent merge to all neighbors with intended recipient " + smallestCandidateUID);
                             // Send out the test message
                             node.connectedClients.forEach((clientHandler) -> {
                                 try {
@@ -334,7 +318,6 @@ public class GHS {
 
                             //Handle the merge
                             if(ackReceivedFromNeighbor.contains(currentLowestUID)){
-                                System.out.println(node.getNodeUID() + " is initiating the merge with " + currentLowestUID);
                                 //Keep track of the edges used for later output
                                 usedEdges.add(currentLowestUID);
 
@@ -366,7 +349,6 @@ public class GHS {
                     //Wait for incoming message
                     if (!node.messageQueue.isEmpty()) {
                         Messages messageRecieved = node.getMessage();
-                        System.out.println(node.getNodeUID() + " recieved " + messageRecieved.getTypeOfMessage() + " from " + messageRecieved.getUIDofSender());
                         //Search
                         if(messageRecieved.getTypeOfMessage() == Type.SEARCH){
                             //Verify it is from the leader of the component
@@ -375,7 +357,6 @@ public class GHS {
                                 if(!searchPassed){
                                     searchPassed = true;
 
-                                    System.out.println(node.getNodeUID() + " passed search to all neighbors");
                                     //Pass the Search message
                                     node.connectedClients.forEach((clientHandler) -> {
                                         try {
@@ -393,7 +374,6 @@ public class GHS {
                                     //Send Test to all neighbors
                                     // Create new test message - weight and intended recipient are not necessary here
                                     Messages testMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, -1, Type.TEST);
-                                    System.out.println(node.getNodeUID() + " sent test to all neighbors");
                                     // Send out the test message
                                     node.connectedClients.forEach((clientHandler) -> {
                                         try {
@@ -419,7 +399,6 @@ public class GHS {
                                 if (node.getNeighbors().get(messageRecieved.UIDofSender).getWeight() < currentLowestWeight) {
                                     currentLowestWeight = node.getNeighbors().get(messageRecieved.UIDofSender).getWeight();
                                     currentLowestUID = messageRecieved.getUIDofSender();
-                                    System.out.println("Current lowest weight: " +  currentLowestWeight + " : " + currentLowestUID);
                                 }
                                 //else a smaller edge already exist
                             }
@@ -430,7 +409,6 @@ public class GHS {
                             if(testRecieved == node.getNeighbors().size()){
                                  // Create new test message - intended recipient will hold the UID of the other side of MWOE
                                  Messages candidateMessage = new Messages(node.getLeader(), level, node.getNodeUID(), currentLowestWeight, currentLowestUID, Type.CANDIDATE);
-                                 System.out.println(node.getNodeUID() + " sent candidate " + currentLowestUID + " of weight " + currentLowestWeight + " to all neighbors");
                                  // Send out the test message
                                  node.connectedClients.forEach((clientHandler) -> {
                                      try {
@@ -466,7 +444,6 @@ public class GHS {
                                     candidatePassed.add(messageRecieved.getUIDofSender());
 
                                     //Pass along the message
-                                    System.out.println(node.getNodeUID() + " passed candidate from " + messageRecieved.getUIDofSender() + " to all neighbors");
                                     //Pass the Search message
                                     node.connectedClients.forEach((clientHandler) -> {
                                         try {
@@ -490,7 +467,6 @@ public class GHS {
                                 mergeResponsible = true;
                                 // Create new ack message - weight is not necessary
                                 Messages ackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.ACK);
-                                System.out.println(node.getNodeUID() + " sent ack to all neighbors with intended " + currentLowestUID);
                                 // Send out the ack message
                                 node.connectedClients.forEach((clientHandler) -> {
                                     try {
@@ -508,7 +484,6 @@ public class GHS {
                                 System.out.println();
                                 // Create new nack message - weight is not necessary
                                 Messages nackMessage = new Messages(node.getLeader(), level, node.getNodeUID(), -1, currentLowestUID, Type.NACK);
-                                System.out.println(node.getNodeUID() + " sent nack to all neighbors with intended " + currentLowestUID);
                                 // Send out the ack message
                                 node.connectedClients.forEach((clientHandler) -> {
                                     try {
@@ -531,7 +506,6 @@ public class GHS {
                                 if(!mergePassed){
                                     mergePassed = true;
 
-                                    System.out.println(node.getNodeUID() + " passed merge to all neighbors");
                                     //Pass the Search message
                                     node.connectedClients.forEach((clientHandler) -> {
                                         try {
@@ -562,7 +536,6 @@ public class GHS {
                             //Check to see if all acks are in
                             if(ackRecieved.size() == node.getNeighbors().size()){
                                 //Handle the merge
-                                System.out.println(node.getNodeUID() + " is initiating the merge with " + currentLowestUID);
                                 //Keep track of the edges used for later output
                                 usedEdges.add(currentLowestUID);
 
