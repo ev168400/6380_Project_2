@@ -52,13 +52,14 @@ public class Main {
         }
         try {
             while (mainNode.connectedClients.size() < mainNode.getNeighbors().size()) {
-                Thread.sleep(10000);
+                Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         //Start algorithm
+        System.out.println(mainNode.getNodeUID() + " is initiating GHS");
         GHS algorithm = new GHS(mainNode);
         algorithm.startGHS();
 

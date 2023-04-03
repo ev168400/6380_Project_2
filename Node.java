@@ -22,7 +22,7 @@ public class Node {
         this.NeighborWeights = NeighborWeights;
         this.numberOfNodes = numNodes;
         this.LeaderUID = nodeUID;
-        this.fragmentSize=0;
+        this.fragmentSize=1;
         this.messageQueue = new LinkedList<Messages>();
     }
 
@@ -31,13 +31,14 @@ public class Node {
     public void addMessageToQueue(Messages newMessage){messageQueue.add(newMessage);}
     public void setLeader(int newLeader){this.LeaderUID = newLeader;}
     public void setNumberNodes(int numNodes){this.numberOfNodes = numNodes;}
-    public void incrementFragmentSize(){this.fragmentSize++;}
+    public void setFragmentSize(int fragmentSize){this.fragmentSize = fragmentSize;}
 
     //Getters
     public int getNodeUID() {return this.nodeUID;}
     public int getNodeListeningPort() {return this.listeningPort;}
     public int getLeader(){return this.LeaderUID;}
     public int getNumberNodes(){return this.numberOfNodes;}
+    public int getFragmentSize(){return this.fragmentSize;}
     public String getNodeHostName() {return this.hostName;}
     public HashMap<Integer, NodeAdj> getNeighbors() {return this.NeighborWeights;}
     public Messages getMessage(){return (Messages) messageQueue.poll();}
